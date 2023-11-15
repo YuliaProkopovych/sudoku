@@ -1,6 +1,5 @@
 use rand::{distributions::OpenClosed01, prelude::*};
 
-use crate::deviation::std_deviation;
 use crate::sudoku::Sudoku;
 
 pub trait SudokuSolver {
@@ -29,15 +28,15 @@ impl SASolver {
         res
     }
 
-    pub fn calculate_initial_temp(sudoku: &Sudoku) -> Option<f32> {
-        let mut list_of_differences = [0; 9];
+    pub fn calculate_initial_temp(sudoku: &Sudoku) -> f64 {
+        let mut list_of_differences = [0.0; 9];
 
         for i in 0..9 {
             let mut tmp_sudoku = sudoku.clone();
             tmp_sudoku.randomly_fill();
-            list_of_differences[i] = tmp_sudoku.calculate_errors() as i32;
+            list_of_differences[i] = tmp_sudoku.calculate_errors() as f64;
         }
-        std_deviation(&list_of_differences)
+        statistical::standard_deviation(&list_of_differences, None)
     }
 
     pub fn choose_new_state(
@@ -88,8 +87,7 @@ impl SudokuSolver for SASolver {
         let fixed_sudoku = Sudoku::get_fixed_values(&initial);
         tmp_sudoku.randomly_fill();
 
-        let mut temp = Self::calculate_initial_temp(&initial)
-            .expect("Failed to calculate initial temperature") as f64;
+        let mut temp = Self::calculate_initial_temp(&initial);
         let mut score: i32 = tmp_sudoku.calculate_errors();
         let iterations = SASolver::calculate_number_of_iterations(&fixed_sudoku);
 

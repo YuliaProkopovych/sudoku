@@ -1,6 +1,5 @@
 use std::{str::FromStr, time::Instant};
 
-mod deviation;
 mod solver;
 mod sudoku;
 use solver::{SASolver, SudokuSolver};
